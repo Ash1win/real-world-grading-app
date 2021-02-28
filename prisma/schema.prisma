@@ -1,20 +1,72 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["aggregateApi"]
+}
+
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgres://ojuhkoay:cwEuNVgaFdAIr2F_YPbp2f7tqjD_xLes@ziggy.db.elephantsql.com:5432/ojuhkoay"
+
 }
 
 // TODO: define fields and relations
 model User {
+  id          Int                @id @default(autoincrement())
+  email       String             @unique
+  firstName   String
+  lastName    String
+  social      Json
+  courses     CourseEnrollment[]
+  testResults TestResult[]       @relation(name: "results")
+  testGraded  TestResult[]       @relation(name: "graded")
 }
 
 // TODO: define fields and relations
 model Course {
+  id            Int    @id @default(autoincrement())
+  name          String
+  courseDetails String
+
+  members CourseEnrollment[]
+  tests   Test[]
+}
+
+model CourseEnrollment {
+  createdAt DateTime @default(now())
+  role      UserRole
+  userId    Int
+  courseId  Int
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@id([userId, courseId, role])
 }
 
 // TODO: define fields and relations
 model Test {
+  id          Int          @id @default(autoincrement())
+  updatedAt   DateTime     @updatedAt
+  name        String
+  date        DateTime
+  courseId    Int
+  course      Course       @relation(fields: [courseId], references: [id])
+  testResults TestResult[]
 }
 
 // TODO: define fields and relations
 model TestResult {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  result    Int
+  testId    Int
+  test      Test     @relation(fields: [testId], references: [id])
+  studentId Int
+  student   User     @relation(name: "results", fields: [studentId], references: [id])
+  graderId  Int
+  gradedBy  User     @relation(name: "graded", fields: [graderId], references: [id])
+}
+
+enum UserRole {
+  STUDENT
+  TEACHER
 }

@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgres://ojuhkoay:cwEuNVgaFdAIr2F_YPbp2f7tqjD_xLes@ziggy.db.elephantsql.com:5432/ojuhkoay"
+  url      = ""
 
 }
 
